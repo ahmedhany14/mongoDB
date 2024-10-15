@@ -1,0 +1,18 @@
+{
+  "name": "sql-and-nosql-tutorial",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "nodemon --exec mocha -R min"
+  },
+  "author": "Hany",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "fs": "^0.0.1-security",
+    "mocha": "^10.7.3",
+    "mongoos": "^0.0.1-security",
+    "mongoose": "^8.7.1"
+  }
+}
