@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const user = require('./../src/userModel');
+const user = require('../src/userModel');
 const assert = require('assert')
 
 describe("read by name tests", () => {

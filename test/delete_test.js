@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 const assert = require('assert')
-const user = require('./../src/userModel')
+const user = require('../src/userModel')
 
 describe("Delete methods", () => {
     let ahmed;
