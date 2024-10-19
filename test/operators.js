@@ -56,7 +56,7 @@ describe('Operators test', () => {
         * $inc - increment the value of the field by the specified amount
                 {$inc: {field_name: value}}
     */
-    it('Test inc operator', (next) => {
+    xit('Test inc operator', (next) => {
 
         user.updateMany({ name: 'Ahmed' }, { $inc: { postCount: 10 } }) // that means the post count should be 20 for the user
             .then(() => {
