@@ -25,3 +25,18 @@ exports.delete = catchAsync(async (req, res, next) => {
         }
     })
 })
+
+
+exports.deleteId = catchAsync(async (req, res, next) => {
+    const id = req.params.id;
+    // To delete a user by id, we can use the findByIdAndDelete method
+
+    const delete_user_by_id = await users.findByIdAndDelete(id);
+
+    res.status(200).json({
+        status: 'success deleted',
+        data: {
+            user: delete_user_by_id
+        }
+    })
+})
