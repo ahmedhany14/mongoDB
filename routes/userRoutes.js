@@ -1,10 +1,11 @@
 const express = require('express');
-const userQueries = require('../queries/users/addusr')
-
+const addUser = require('../queries/users/addusr')
+const deleteUser = require('../queries/users/deleteuser')
 const router = express.Router();
 
 router.route('/')
-    .post(userQueries.adduser)
+    .post(addUser.adduser)
+    .delete(deleteUser.delete)
 
 
 
