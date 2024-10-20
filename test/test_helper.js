@@ -19,8 +19,9 @@ before((next) => {
 
 // will be run after each test
 beforeEach((next) => {
-    console.log('Drop DB');
-    mongoose.connection.collections.users.drop(() => {
-        next();
-    });
+    console.log('Drop usrs');
+    mongoose.connection.collections.users.drop(() => { });
+    console.log('Drop usrs2');
+    mongoose.connection.collections.users2.drop(() => { });
+    next();
 })

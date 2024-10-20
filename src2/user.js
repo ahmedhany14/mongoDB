@@ -1,5 +1,4 @@
 const mongoose = require('mongoose')
-const postSchema = require('./post')
 const userSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -8,14 +7,15 @@ const userSchema = new mongoose.Schema({
             validator: (name) => name.length > 2,
             validator: (name) => name.length < 10,
             message: "name should be less than 10 and  more than 2 characters"
-        }
+        },
     },
-    posts: [postSchema]
+    postIDs: {
+        type: [mongoose.Schema.Types.ObjectId],
+        default: [],
+        required: true,
+        ref: 'postBlog'
+    }
 })
 
-userSchema.virtual('postCount').get(function () {
-    return this.posts.length;
-})
-const user = mongoose.model('users', userSchema)
-
-module.exports = user; 
+const users2 = mongoose.model('users2', userSchema)
+module.exports = users2; 
