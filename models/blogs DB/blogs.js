@@ -17,11 +17,7 @@ const blogSchema = new mongoose.Schema({
     creator: {
         creator_id: String,
     },
-    comments: [
-        {
-            comment_id: String,
-        }
-    ]
+    comments: [String]
 })
 
 const blogs = mongoose.model('blogs', blogSchema)
