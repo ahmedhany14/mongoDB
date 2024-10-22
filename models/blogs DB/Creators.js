@@ -8,11 +8,7 @@ const creatorSchema = new mongoose.Schema({
     email: {
         type: String,
     },
-    Blogs: [
-        {
-            id_: mongoose.Schema.Types.ObjectId,
-        }
-    ]
+    Blogs: [String]
 });
 
 const creators = mongoose.model('creators', creatorSchema)

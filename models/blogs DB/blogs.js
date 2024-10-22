@@ -15,11 +15,11 @@ const blogSchema = new mongoose.Schema({
         default: Date.now,
     },
     creator: {
-        id_: mongoose.Schema.Types.ObjectId,
+        creator_id: String,
     },
     comments: [
         {
-            id_: mongoose.Schema.Types.ObjectId,
+            comment_id: String,
         }
     ]
 })

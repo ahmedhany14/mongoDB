@@ -9,10 +9,10 @@ const commentSchema = new mongoose.Schema({
         default: Date.now,
     },
     creator: {
-        id_: mongoose.Schema.Types.ObjectId,
+        creator_id: String,
     },
     blog: {
-        id_: mongoose.Schema.Types.ObjectId,
+        blog_id: String,
     }
 })
 
