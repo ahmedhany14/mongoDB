@@ -1,6 +1,6 @@
 const movies = require('./../../models/movie')
 const catchError = require('./../../utils/catcherrors')
-
+let data = null
 class moviesFilter {
 
     constructor(query, queryString) {
@@ -58,10 +58,15 @@ class moviesFilter {
     }
 
 
-    skip() {
 
+    pagination() {
+        const page = this.queryString.page * 1 || 1;
+        const limit = this.queryString.limit * 1 || 10;
+        const skip = (page - 1) * limit;
+
+        this.query = this.query.skip(skip).limit(limit)
+        return this;
     }
-
 }
 
 exports.getMovies = catchError(async (req, res, next) => {
@@ -130,3 +135,33 @@ Array operators
     ex: movies.find({ genres: { $elemMatch: { $eq: 'action' } } }) will get all movies with genres array containing action
         users.find({ $elemMatch: { age: { $gt: 20, $lt: 50 } } }) will get all users with at least one age between 20 and 50
 */
+
+const get_all = async function () {
+    data = await movies.find();
+}
+
+exports.WorkingWithCorsors = catchError(async (req, res, next) => {
+    /*
+    when we have a large number of documents we can't send all of them at once
+    instead we can send them in pages or batches to avoid overloading the server and wasting bandwidth and resources
+    */
+
+    /*
+    lets assume we have a collection of movies with 240 documents
+    we will send 10 documents per page
+    */
+
+    const query = new moviesFilter(movies.find(), req.query).pagination();
+    const result = await query.query;
+    /*
+    we can also use the slice method to get the documents of the page
+    if (!data) await get_all();
+    const result = await data.slice((req.params.page - 1) * 10, req.params.page * 10);
+    */
+
+    res.status(200).json({
+        success: true,
+        results: result.length,
+        data: result
+    })
+})

@@ -1,5 +1,5 @@
 const express = require('express');
-const { getMovies,useExpr } = require('../queries/movies/operation_and_filters')
+const { getMovies, useExpr, WorkingWithCorsors } = require('../queries/movies/operation_and_filters')
 const router = express.Router();
 
 router.route('/')
@@ -7,5 +7,10 @@ router.route('/')
 
 router.route('/expr')
     .get(useExpr)
+
+
+router.route('/cursor/:page')
+    .get(WorkingWithCorsors)
+
 
 module.exports = router;
