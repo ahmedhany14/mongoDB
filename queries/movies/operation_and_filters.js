@@ -9,7 +9,7 @@ class moviesFilter {
     }
 
     filter() {
-        let filter = {...this.queryString};
+        let filter = { ...this.queryString };
 
         const notAllowedFields = ['page', 'sort', 'limit', 'fields'];
 
@@ -28,7 +28,7 @@ class moviesFilter {
         const operators = ['$gt', '$gte', '$lt', '$lte', '$ne', '$eq'];
         for (const key in filter) {
             if (typeof filter[key] === 'object') {
-                filter[key] = {...filter[key]};
+                filter[key] = { ...filter[key] };
                 for (const key2 in filter[key]) {
                     if (operators.includes(key2))
                         filter[key][key2] = parseInt(filter[key][key2]);
@@ -65,7 +65,7 @@ class moviesFilter {
 }
 
 exports.getMovies = catchError(async (req, res, next) => {
-    const filter = {...req.query};
+    const filter = { ...req.query };
 
     const query = new moviesFilter(movies.find(), filter).filter().limitFields().sort();
     const result = await query.query;
@@ -74,5 +74,42 @@ exports.getMovies = catchError(async (req, res, next) => {
         success: true,
         results: result.length,
         data: result
+    })
+})
+
+exports.useExpr = catchError(async (req, res, next) => {
+
+    const result = await movies.find({
+        // will get all users with  runtime greater than weight
+        $expr: {
+            $gt: ['$runtime', '$weight']
+        }
+    });
+
+    // using of conditions with $expr
+    // if there is any runtime greater than 80 decrease its by 10
+    const result2 = await movies.find({
+        $expr: {
+            $gt: [
+                {
+                    $cond: {
+                        if:
+                            { $gte: ['$runtime', 30] },
+                        then: { $subtract: ['$runtime', 26] },
+                        else: '$runtime'
+
+                    }
+                }
+                , '$weight'
+            ]
+        }
+    })
+
+
+    res.status(200).json({
+        result: result.length,
+        data: {
+            result2
+        }
     })
 })
