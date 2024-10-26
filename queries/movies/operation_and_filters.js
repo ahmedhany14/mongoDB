@@ -112,3 +112,21 @@ exports.useExpr = catchError(async (req, res, next) => {
         }
     })
 })
+
+/*
+Array operators
+
+1) $size
+    will get the array with size that is equal to the $size value
+    ex: movies.find({ genres: { $size: 2 } })   will get all movies with genres array size equal to 2
+2) $all
+    will get the instance that has all the values in the array
+    ex: movies.find({ genres: { $all: ['action', 'adventure'] } }) will get all movies with genres array containing action and adventure
+    NOTE: 
+        if you write the query like this { genres: ['action', 'adventure'] } it will get all movies with genres array equal to ['action', 'adventure']
+
+3) $elemMatch
+    will get the instance that has at least one element that matches the query
+    ex: movies.find({ genres: { $elemMatch: { $eq: 'action' } } }) will get all movies with genres array containing action
+        users.find({ $elemMatch: { age: { $gt: 20, $lt: 50 } } }) will get all users with at least one age between 20 and 50
+*/
