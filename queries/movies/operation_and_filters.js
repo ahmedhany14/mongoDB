@@ -93,8 +93,7 @@ exports.useExpr = catchError(async (req, res, next) => {
             $gt: [
                 {
                     $cond: {
-                        if:
-                            { $gte: ['$runtime', 30] },
+                        if: { $gte: ['$runtime', 30] },
                         then: { $subtract: ['$runtime', 26] },
                         else: '$runtime'
 
