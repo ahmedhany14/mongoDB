@@ -12,5 +12,5 @@ router.route('/')
     .get(readUser.read)
 router.route('/:id')
     .delete(deleteUser.deleteId)
-
+    .patch(updateUser.updateOperations)
 module.exports = router;
