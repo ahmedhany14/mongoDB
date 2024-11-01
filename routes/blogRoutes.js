@@ -2,7 +2,8 @@ const express = require('express');
 
 const {
     createPost,
-    deletePost
+    deletePost,
+    searchPost
 } = require('../queries/Blogs project/PostController')
 
 
@@ -19,6 +20,8 @@ router.route('/:id')
 router.route('/:post_id/:creator_id')
     .patch(createComment)
 
+router.route('/search')
+    .post(searchPost)
 
 router.route('/comments/:post_id')
     .get(getComments)

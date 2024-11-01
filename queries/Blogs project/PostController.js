@@ -5,7 +5,8 @@ const catchAsync = require('../../utils/catcherrors')
 
 
 exports.createPost = catchAsync(async (req, res, next) => {
-    const blog = req.body; new mongoose.Types.ObjectId
+    const blog = req.body;
+    new mongoose.Types.ObjectId
 
     const user_id = req.params.id;
 
@@ -22,7 +23,7 @@ exports.createPost = catchAsync(async (req, res, next) => {
     await new_blog.save()
     const blog_id = new_blog._id;
     await creators.findByIdAndUpdate(user_id, {
-        $push: { Blogs: blog_id }
+        $push: {Blogs: blog_id}
     })
 
     res.status(201).json({
@@ -50,7 +51,7 @@ exports.deletePost = catchAsync(async (req, res, next) => {
 
     // delete the blog post from the creator's list of blogs
     await creators.findByIdAndUpdate(creator_id, {
-        $pull: { Blogs: post_id }
+        $pull: {Blogs: post_id}
     })
 
     res.status(204).json({
@@ -59,4 +60,20 @@ exports.deletePost = catchAsync(async (req, res, next) => {
         creator_id
     })
 
+});
+
+
+exports.searchPost = catchAsync(async (req, res, next) => {
+    const query = req.body.text;
+    // search for the query in the content of the blog
+    // the $text operator is used to perform a text search on the content field of the blog
+    // the $search operator is used to specify the query to search for
+    // the $meta operator is used to return the textScore of the search and sort the results based on the textScore
+    const posts = await blogs.find({$text: {$search: query}}, {score: {$meta: 'textScore'}});
+    res.status(200).json({
+        status: 'success',
+        data: {
+            posts
+        }
+    })
 })

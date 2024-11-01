@@ -20,6 +20,9 @@ const blogSchema = new mongoose.Schema({
     comments: [String]
 })
 
+// this is a text index to enable search for a text or a word in the content of the blog
+blogSchema.index({content: 'text'})
+
 const blogs = mongoose.model('blogs', blogSchema)
 
 module.exports = blogs; 
