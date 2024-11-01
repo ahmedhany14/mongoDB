@@ -1,5 +1,5 @@
 const express = require('express');
-const { getMovies, useExpr, WorkingWithCorsors } = require('../queries/movies/operation_and_filters')
+const {getMovies, useExpr, WorkingWithCorsors} = require('../queries/movies/operation_and_filters')
 const router = express.Router();
 
 router.route('/')
