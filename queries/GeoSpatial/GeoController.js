@@ -16,3 +16,23 @@ exports.createPlace = catchAsync(async (request, response, next) => {
         status: 'success', data: place
     })
 });
+
+exports.nearestPlace = catchAsync(async (request, response, next) => {
+    const {coordinates, minDist, maxDist} = request.body;
+    console.log(coordinates, minDist, maxDist);
+    const nearest_place = await places.find({
+        location: {
+            $near: {
+                $geometry: {
+                    type: 'Point',
+                    coordinates: coordinates
+                },
+                $minDistance: minDist,
+                $maxDistance: maxDist
+            }
+        }
+    }).explain("executionStats");
+    response.status(200).json({
+        status: 'success', data: nearest_place
+    })
+})
