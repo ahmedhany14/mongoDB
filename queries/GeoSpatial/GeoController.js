@@ -36,3 +36,23 @@ exports.nearestPlace = catchAsync(async (request, response, next) => {
         status: 'success', data: nearest_place
     })
 })
+
+exports.PlaceInPoly = catchAsync(async (request, response, next) => {
+    const coordinates = request.body.coordinates;
+
+    // add the first element to the end of the array to close the polygon
+    coordinates.push(coordinates[0]);
+    const nearest_place = await places.find({
+        location: {
+            $geoWithin: {
+                $geometry: {
+                    type: 'Polygon',
+                    coordinates: [coordinates]
+                },
+            }
+        }
+    })
+    response.status(200).json({
+        status: 'success', data: nearest_place
+    })
+})

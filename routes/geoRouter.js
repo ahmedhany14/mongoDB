@@ -1,5 +1,5 @@
 const express = require('express');
-const {getPlaces, createPlace, nearestPlace} = require('./../queries/GeoSpatial/GeoController');
+const {getPlaces, createPlace, nearestPlace, PlaceInPoly} = require('./../queries/GeoSpatial/GeoController');
 
 const router = express.Router();
 
@@ -10,4 +10,8 @@ router.route('/')
 
 router.route('/nearest')
     .get(nearestPlace)
+
+router.route('/in-poly')
+    .get(PlaceInPoly)
+
 module.exports = router;
