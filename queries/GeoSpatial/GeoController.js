@@ -24,11 +24,8 @@ exports.nearestPlace = catchAsync(async (request, response, next) => {
         location: {
             $near: {
                 $geometry: {
-                    type: 'Point',
-                    coordinates: coordinates
-                },
-                $minDistance: minDist,
-                $maxDistance: maxDist
+                    type: 'Point', coordinates: coordinates
+                }, $minDistance: minDist, $maxDistance: maxDist
             }
         }
     }).explain("executionStats");
@@ -46,8 +43,7 @@ exports.PlaceInPoly = catchAsync(async (request, response, next) => {
         location: {
             $geoWithin: {
                 $geometry: {
-                    type: 'Polygon',
-                    coordinates: [coordinates]
+                    type: 'Polygon', coordinates: [coordinates]
                 },
             }
         }
@@ -56,3 +52,26 @@ exports.PlaceInPoly = catchAsync(async (request, response, next) => {
         status: 'success', data: nearest_place
     })
 })
+
+/*
+Summary:
+1) how to store geospatial data in mongodb:
+    - create a schema with location field that has type: {type: String, default: 'Point'} and coordinates: {type: [Number], required: true}
+    - create an index on the location field with type '2dsphere'
+
+2) how to query geospatial data in mongodb:
+
+    - near:
+        - find all places near a certain point with a minimum distance and a maximum distance
+        - db.places.find({location: {$near: {$geometry: {type: 'Point', coordinates: [longitude, latitude]}, $minDistance: minDist, $maxDistance: maxDist}}})
+
+    - geoWithin:
+        - find all places within a polygon
+        - db.places.find({location: {$geoWithin: {$geometry: {type: 'Polygon', coordinates: [[long1, lat1], [long2, lat2], [long3, lat3], [long1, lat1]]}}}})
+
+    - geoIntersects:
+        - find all places that intersect with a certain geometry, it can be a point, a line, or a polygon
+        - db.places.find({location: {$geoIntersects: {$geometry: {type: 'Point', coordinates: [longitude, latitude]}}}})
+        - db.places.find({location: {$geoIntersects: {$geometry: {type: 'LineString', coordinates: [[long1, lat1], [long2, lat2]]}}}})
+        - db.places.find({location: {$geoIntersects: {$geometry: {type: 'Polygon', coordinates: [[long1, lat1], [long2, lat2], [long3, lat3], [long1, lat1]]}}}})
+ */
