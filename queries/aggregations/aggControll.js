@@ -3,7 +3,7 @@ const catchAsync = require('../../utils/catcherrors');
 const mongoose = require('mongoose');
 
 /*
-there are aggragation stages that we can use to manipulate the data in the database
+there are aggregation stages that we can use to manipulate the data in the database
 1) $match: filters the documents based on the specified condition
 2) $group: groups the documents based on a fields value, it makes them unique
     there are some operators that we can use with $group:
@@ -16,9 +16,14 @@ there are aggragation stages that we can use to manipulate the data in the datab
 3) $sort: sorts the documents based on the specified field
     $sort: {field: 1} // ascending order
     $sort: {field: -1} // descending order
-4) $project: selects the fields that we want to show in the response and hides the other fields
+4) $project: selects the figields that we want to show in the response and hides the other fields
 5) $limit: limits the number of documents in the response
 6) $unwind: deconstructs the array field from the documents and returns the documents with the array field as a single element
+
+7) $bucket: groups the documents into buckets based on the specified boundaries, more formally it divides the documents into range of boundaries
+    - groupBy: the field that we want to group the documents based on
+    - boundaries: an array of values that specifies the boundaries of the buckets [1, 2, 3, 4] will be 3 buckets, [1: 2], [2: 3], [3: 4]
+    - output: the fields that we want to show in the response
 
  */
 exports.aggregateContacts = catchAsync(async (request, response, next) => {
@@ -154,12 +159,43 @@ exports.aggregateContacts = catchAsync(async (request, response, next) => {
             }
         },
         {$unwind: "$allCities"}, // after this stage, the response will have a document for each city in each state, instead of having an array of cities in each state
-
     ]
-    const people = await contacts.aggregate(pipline4);
+
+    const pipline5 = [
+        {
+            // $bucket: {
+            //     groupBy: '$dob.age',
+            //     boundaries: [0, 18, 30, 50, 70, 100],
+            //     output: {
+            //         totalPeople: {
+            //             $sum: 1
+            //         },
+            //         averageAge: {
+            //             $avg: '$dob.age'
+            //         }
+            //     }
+            // }
+            // we can use $bucketAuto instead of $bucket to automatically create the boundaries
+
+            $bucketAuto: {
+                groupBy: '$dob.age',
+                buckets: 8,
+                output: {
+                    totalPeople: {
+                        $sum: 1
+                    },
+                    averageAge: {
+                        $avg: '$dob.age'
+                    }
+                }
+            }
+
+        }
+    ];
+    const people = await contacts.aggregate(pipline5);
 
     response.status(200).json({
         status: 'success', length: people.length, data: people
     });
 })
-    ;
+;
