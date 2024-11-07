@@ -1,5 +1,6 @@
 const contacts = require('./../../models/contacts');
 const catchAsync = require('../../utils/catcherrors');
+const Geo = require('./../../models/geoCollection');
 const mongoose = require('mongoose');
 
 /*
@@ -16,7 +17,7 @@ there are aggregation stages that we can use to manipulate the data in the datab
 3) $sort: sorts the documents based on the specified field
     $sort: {field: 1} // ascending order
     $sort: {field: -1} // descending order
-4) $project: selects the figields that we want to show in the response and hides the other fields
+4) $project: selects the fields that we want to show in the response and hides the other fields
 5) $limit: limits the number of documents in the response
 6) $unwind: deconstructs the array field from the documents and returns the documents with the array field as a single element
 
@@ -28,7 +29,12 @@ there are aggregation stages that we can use to manipulate the data in the datab
 9) $skip: skips the specified number of documents in the response
 10) $out: writes the output of the aggregation to a collection
 
-
+11) $geoNear: returns the documents based on their distance from a specified point
+    - near: the point that we want to calculate the distance from
+    - maxDistance: the maximum distance from the point
+    - distanceField: the field that we want to store the distance in
+    - query: the query that we want to apply to the documents, it is like find method
+    Note: geoNear stage should be the first stage in the pipeline
  */
 exports.aggregateContacts = catchAsync(async (request, response, next) => {
     const pipline = [
@@ -123,31 +129,34 @@ exports.aggregateContacts = catchAsync(async (request, response, next) => {
                 age: "$dob.age",
             }
         },
-        {
-            $group: {
-                _id: {
-                    year: {
-                        $year: "$birthday"
-                    },
-                    // month: {
-                    //     $month: "$birthday"
-                    // },
-                    // day: {
-                    //     $dayOfMonth: "$birthday"
-                    // }
-                },
-                totalPeople: {
-                    $sum: 1
-                },
-            }
-        },
+        // {
+        //     $group: {
+        //         _id: {
+        //             year: {
+        //                 $year: "$birthday"
+        //             },
+        //             // month: {
+        //             //     $month: "$birthday"
+        //             // },
+        //             // day: {
+        //             //     $dayOfMonth: "$birthday"
+        //             // }
+        //         },
+        //         totalPeople: {
+        //             $sum: 1
+        //         },
+        //     }
+        // },
         {
             $sort: {
                 'totalPeople': -1
             }
         },
+        // {
+        //     $limit: 10
+        // }
         {
-            $limit: 10
+            $out: "geoContacts"
         }
     ]
 
@@ -219,12 +228,39 @@ exports.aggregateContacts = catchAsync(async (request, response, next) => {
         {
             $limit: 10
         }
-    ]
+    ];
 
-    const people = await contacts.aggregate(pipline6);
+    const pipeline7 = [
+        {
+            $geoNear: {
+                near: {
+                    type: 'Point',
+                    coordinates: [-80.5, 25.9]
+                },
+                maxDistance: 10000,
+                distanceField: 'distance',
+                num: 10
+            }
+        }
+    ];
 
+    //const people = await contacts.aggregate(pipline3);
+
+    const geo = await Geo.aggregate([
+        {
+            $geoNear: {
+                near: {
+                    type: 'Point',
+                    coordinates: [-80.5, 25.9]
+                },
+                maxDistance: 10000,
+                distanceField: 'distance',
+                num: 10
+            }
+        }
+    ]);
     response.status(200).json({
-        status: 'success', length: people.length, data: people
+        status: 'success', length: geo.length, data: geo
     });
 })
 ;
