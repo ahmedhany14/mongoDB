@@ -24,6 +24,9 @@ there are aggregation stages that we can use to manipulate the data in the datab
     - groupBy: the field that we want to group the documents based on
     - boundaries: an array of values that specifies the boundaries of the buckets [1, 2, 3, 4] will be 3 buckets, [1: 2], [2: 3], [3: 4]
     - output: the fields that we want to show in the response
+8) $bucketAuto: automatically creates the boundaries for the buckets
+9) $skip: skips the specified number of documents in the response
+10) $out: writes the output of the aggregation to a collection
 
  */
 exports.aggregateContacts = catchAsync(async (request, response, next) => {
@@ -192,7 +195,32 @@ exports.aggregateContacts = catchAsync(async (request, response, next) => {
 
         }
     ];
-    const people = await contacts.aggregate(pipline5);
+    // challenge
+    /*
+        we want to get the oldest 10 people in the database
+     */
+
+    const pipline6 = [
+        {
+            $project: {
+                _id: 0,
+                date: '$dob.date',
+                name: {
+                    $concat: ["$name.title", " ", "$name.first", " ", "$name.last"]
+                }
+            }
+        },
+        {
+            $sort: {
+                date: 1
+            }
+        },
+        {
+            $limit: 10
+        }
+    ]
+
+    const people = await contacts.aggregate(pipline6);
 
     response.status(200).json({
         status: 'success', length: people.length, data: people
