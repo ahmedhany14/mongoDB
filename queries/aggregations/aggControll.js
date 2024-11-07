@@ -28,6 +28,7 @@ there are aggregation stages that we can use to manipulate the data in the datab
 9) $skip: skips the specified number of documents in the response
 10) $out: writes the output of the aggregation to a collection
 
+
  */
 exports.aggregateContacts = catchAsync(async (request, response, next) => {
     const pipline = [
